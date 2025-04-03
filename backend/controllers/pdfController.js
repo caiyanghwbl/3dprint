@@ -12,7 +12,7 @@ exports.generatePDF = async (req, res) => {
 
     const doc = new PDFDocument();
 
-    // 注册支持中文的字体（确保 fonts/simsun.ttf 存在）
+    // 注册中文字体（确保 fonts/simsun.ttf 存在）
     doc.registerFont('Chinese', path.join(__dirname, '../fonts/simsun.ttf'));
     doc.font('Chinese');
 
@@ -25,17 +25,16 @@ exports.generatePDF = async (req, res) => {
     const writeStream = fs.createWriteStream(pdfPath);
     doc.pipe(writeStream);
 
-    // 格式化当前日期为 YYYY-MM-DD
+    // 格式化当前日期
     const currentDate = new Date();
-    const formattedDate = currentDate.getFullYear() + '-' + 
-      (currentDate.getMonth() + 1).toString().padStart(2, '0') + '-' + 
+    const formattedDate = currentDate.getFullYear() + '-' +
+      (currentDate.getMonth() + 1).toString().padStart(2, '0') + '-' +
       currentDate.getDate().toString().padStart(2, '0');
 
-    // 写入标题
+    // 写入 PDF 内容
     doc.fontSize(20).text('南京艺术学院3D打印设备使用申请责任书', { align: 'center' });
     doc.moveDown(1.5);
 
-    // 写入正文内容
     const content = `
 本人（${application.applicantName}），系南京艺术学院学生/教职工，学号/工号：${application.applicantId}。
 因学习/科研需要，现申请使用学校3D打印实验室的设备进行相关操作。为确保设备的安全运行和合理使用，
@@ -51,18 +50,18 @@ exports.generatePDF = async (req, res) => {
 
 【时间管理】：合理安排使用时间，珍惜公共资源，按时完成操作，不影响他人使用。
 
-【成果归属】：在使用学校设备完成的作品或研究成果，遵守学校关于知识产权的相关规定。
-
 本人已详细阅读并理解以上条款，自愿签署本责任书，并承诺严格遵守。
 `;
-    doc.fontSize(12).text(content, {
-      align: 'left',
-      lineGap: 6
-    });
+    doc.fontSize(12).text(content, { align: 'left', lineGap: 6 });
     doc.moveDown();
 
-    // 在PDF中写入当前状态（审批状态）
-    doc.text(`当前状态：${application.approvalStatus}`, { underline: true });
+    // 显示申请使用日期和时间
+    const usageDT = new Date(application.usageDateTime).toLocaleString('zh-CN');
+    doc.text(`申请使用日期和时间： ${usageDT}`);
+    doc.moveDown();
+
+    // 显示当前审批状态
+    doc.text(`当前状态： ${application.approvalStatus}`, { underline: true });
     doc.moveDown();
 
     // 添加签名部分
@@ -70,14 +69,10 @@ exports.generatePDF = async (req, res) => {
       doc.text('申请人签名：', { continued: true });
       const signatureBase64 = application.signature.replace(/^data:image\/\w+;base64,/, '');
       const signatureBuffer = Buffer.from(signatureBase64, 'base64');
-      doc.image(signatureBuffer, {
-        fit: [150, 50],
-        align: 'left'
-      });
+      doc.image(signatureBuffer, { fit: [150, 50], align: 'left' });
     } else {
       doc.text('申请人签名：__________');
     }
-
     doc.moveDown();
     doc.text(`日期： ${formattedDate}`);
 
@@ -93,7 +88,7 @@ exports.generatePDF = async (req, res) => {
       console.error('PDF写入错误：', err);
       res.status(500).json({ success: false, message: err.message });
     });
-    
+
   } catch (error) {
     console.error('PDF生成错误：', error);
     res.status(500).json({ success: false, message: error.message });

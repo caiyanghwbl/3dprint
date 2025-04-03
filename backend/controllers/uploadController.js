@@ -2,14 +2,25 @@ const Application = require('../models/Application');
 
 exports.uploadFile = async (req, res) => {
   try {
+    console.log('请求体:', req.body);
     console.log('上传的文件信息:', req.file);
     if (!req.file) {
       return res.status(400).json({ message: '未检测到文件上传' });
     }
+    // 验证 usageDateTime 是否存在
+    if (!req.body.usageDateTime) {
+      return res.status(400).json({ message: '预约使用日期和时间必填' });
+    }
+    const usageDate = new Date(req.body.usageDateTime);
+    if (isNaN(usageDate)) {
+      return res.status(400).json({ message: '预约使用日期和时间格式错误' });
+    }
+    
     const newApplication = new Application({
       applicantName: req.body.applicantName,
-      applicantId: req.body.applicantId, // 保存学号/工号
-      fileUrl: req.file.path
+      applicantId: req.body.applicantId,
+      fileUrl: req.file.path,
+      usageDateTime: usageDate
     });
     const savedApp = await newApplication.save();
     res.json({ success: true, application: savedApp });
