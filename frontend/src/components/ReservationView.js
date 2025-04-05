@@ -5,7 +5,7 @@ import './ReservationView.css'
 function ReservationView({ onBack }) {
   const [reservations, setReservations] = useState([])
   useEffect(() => {
-    axios.get('http://localhost:3001/api/reservations')
+    axios.get('http://45.63.15.45:3001/api/reservations')
       .then(res => {
         if (res.data.success) {
           setReservations(res.data.reservations)
