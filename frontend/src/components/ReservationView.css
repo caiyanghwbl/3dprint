@@ -1,0 +1,45 @@
+/* frontend/src/components/ReservationView.css */
+.reservation-container {
+    max-width: 800px;
+    margin: 20px auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  .reservation-container h2 {
+    text-align: center;
+    color: #2c3e50;
+  }
+  .reservation-day {
+    margin-bottom: 20px;
+  }
+  .reservation-day h3 {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+    color: #34495e;
+  }
+  .slots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .slot {
+    flex: 1 1 30%;
+    background: #f9f9f9;
+    padding: 10px;
+    border-radius: 4px;
+    text-align: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  }
+  .slot-time {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+    color: #2980b9;
+  }
+  .slot-count {
+    color: #e74c3c;
+  }
+  
